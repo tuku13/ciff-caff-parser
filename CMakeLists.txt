@@ -3,4 +3,4 @@ project(ciff_caff_parser)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(parser main.cpp Caff.cpp Caff.h FileFormatException.h utils.h)
+add_executable(parser main.cpp Caff.cpp Caff.h FileFormatException.h utils.h Ciff.cpp Ciff.h constants.h utils.cpp)

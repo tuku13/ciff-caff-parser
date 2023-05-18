@@ -1,0 +1,25 @@
+//
+// Created by Martin on 2023. 05. 18..
+//
+
+#pragma once
+
+#define HEADER_TYPE_HEADER 1
+#define HEADER_TYPE_CREDITS 2
+#define HEADER_TYPE_ANIMATION 3
+
+#define HEADER_LENGTH_SIZE 8
+#define MAGIC_SIZE 4
+#define NUMBER_OF_ANIMATIONS_SIZE 8
+#define CREATOR_LENGTH_SIZE 8
+#define DURATION_SIZE 8
+
+#define YEAR_SIZE 2
+#define MONTH_SIZE 1
+#define DAY_SIZE 1
+#define HOUR_SIZE 1
+#define MINUTE_SIZE 1
+#define DATE_SIZE YEAR_SIZE + MONTH_SIZE + DAY_SIZE + HOUR_SIZE + MINUTE_SIZE
+
+#define CAFF_MAGIC "CAFF"
+#define CIFF_MAGIC "CIFF"

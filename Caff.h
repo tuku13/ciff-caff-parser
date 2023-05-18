@@ -2,8 +2,7 @@
 // Created by Martin on 2023. 05. 13..
 //
 
-#ifndef CIFF_CAFF_PARSER_CAFF_H
-#define CIFF_CAFF_PARSER_CAFF_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -33,9 +32,6 @@ private:
 public:
     explicit Caff(const std::string &filePath);
 
-
     void convert();
 };
 
-
-#endif //CIFF_CAFF_PARSER_CAFF_H

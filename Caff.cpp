@@ -6,7 +6,9 @@
 #include <iostream>
 #include "Caff.h"
 #include "FileFormatException.h"
+#include "constants.h"
 #include "utils.h"
+#include <cstring>
 
 Caff::Caff(const std::string &fileName) {
     std::ifstream file(fileName, std::ios::binary);

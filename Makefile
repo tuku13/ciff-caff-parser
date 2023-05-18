@@ -1,8 +1,8 @@
 parser: main.o
-	g++ main.o -o parser
+	g++ main.o Caff.o Ciff.o utils.o -o parser
 
-main.o: main.cpp
-	g++ -c main.cpp
+main.o: main.cpp Caff.cpp Caff.h  Ciff.cpp Ciff.h utils.cpp utils.h constants.h
+	g++ -c main.cpp Caff.cpp Ciff.cpp utils.cpp
 
 clean:
 	rm *.o parser

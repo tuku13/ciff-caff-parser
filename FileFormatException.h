@@ -2,9 +2,7 @@
 // Created by Martin on 2023. 05. 13..
 //
 
-#ifndef CIFF_CAFF_PARSER_FILEFORMATEXCEPTION_H
-#define CIFF_CAFF_PARSER_FILEFORMATEXCEPTION_H
-
+#pragma once
 
 #include <exception>
 #include <string>
@@ -21,6 +19,3 @@ public:
         return message.c_str();
     }
 };
-
-
-#endif //CIFF_CAFF_PARSER_FILEFORMATEXCEPTION_H
