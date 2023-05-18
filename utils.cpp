@@ -2,10 +2,36 @@
 // Created by Martin on 2023. 05. 18..
 //
 
+#include <iostream>
 #include "utils.h"
 
 int utils::covertToInt(const char *data) {
-    int value = static_cast<int>(static_cast<unsigned char>(*data));
+    for (int i = 0; i <= sizeof(data) - 1; i++) {
+        std::cout << std::to_string(data[i]) << " ";
+    }
+    std::cout << std::endl;
+//    std::cout << "-> ";
+
+    char dataInverse[sizeof(data)];
+    for (int i = 0; i <= sizeof(data) - 1; i++) {
+        dataInverse[i] = data[sizeof(data) - 1 - i];
+    }
+    for (int i = 0; i <= sizeof(data) - 1; i++) {
+        std::cout << std::to_string(dataInverse[i]) << " ";
+    }
+    std::cout << std::endl;
+
+    int value = covertToInt(data, 1);
+    std::cout << value << " | " << covertToInt(dataInverse, sizeof(data)) << std::endl;
+    std::cout << std::endl;
+    return value;
+}
+
+int utils::covertToInt(const char *data, int bytes) {
+    int value = 0;
+    for (int i = 0; i < bytes; i++) {
+        value = (value << 8) | static_cast<unsigned char>(data[i]);
+    }
     return value;
 }
 

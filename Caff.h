@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include "Ciff.h"
 
 class Caff {
 private:
@@ -23,6 +24,7 @@ private:
     std::string creator;
 
     std::vector<int> durations;
+    std::vector<Ciff> ciffImages;
 
     void readFileHeader(std::ifstream &file);
 

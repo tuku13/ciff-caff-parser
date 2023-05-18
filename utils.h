@@ -6,6 +6,8 @@
 
 namespace utils {
     int covertToInt(const char* data);
+    int covertToInt(const char* data, int bytes);
+
 
     int readAsInt(std::ifstream &file, int bytes);
 

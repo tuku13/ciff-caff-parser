@@ -8,6 +8,7 @@
 #include "FileFormatException.h"
 #include "constants.h"
 #include "utils.h"
+#include "Ciff.h"
 #include <cstring>
 
 Caff::Caff(const std::string &fileName) {
@@ -115,6 +116,9 @@ void Caff::readAnimation(std::ifstream &file, int length) {
 
     int duration = utils::readAsInt(file, DURATION_SIZE);
     durations.push_back(duration);
+
+    Ciff ciff(file);
+    ciffImages.push_back(ciff);
 
     animationRead = true;
 }
