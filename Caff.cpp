@@ -14,15 +14,17 @@ Caff::Caff(const std::string &fileName) {
         throw FileFormatException(fileName + " not found.");
     }
 
-    bool fileProcessed = false;
-    while (!fileProcessed) {
+//    bool fileProcessed = false;
+    int processedHeaders = 0;
+    while (processedHeaders < 3) {
         try {
             readFileHeader(file);
         } catch (FileFormatException &exception) {
             file.close();
             throw FileFormatException(exception.what());
         }
-        fileProcessed = true;
+        processedHeaders++;
+//        fileProcessed = true;
     }
 
     file.close();
@@ -30,59 +32,36 @@ Caff::Caff(const std::string &fileName) {
 
 void Caff::readFileHeader(std::ifstream &file) {
     int headerType = utils::readAsInt(file, 1);
+    int length = utils::readAsInt(file, HEADER_LENGTH_SIZE);
 
     switch (headerType) {
         case HEADER_TYPE_HEADER:
             std::cout << "HEADER" << std::endl;
-            readHeader(file);
+            readHeader(file, length);
             break;
         case HEADER_TYPE_CREDITS:
             std::cout << "CREDITS" << std::endl;
-            readCredits(file);
+            readCredits(file, length);
             break;
         case HEADER_TYPE_ANIMATION:
             std::cout << "ANIMATION" << std::endl;
-            readAnimation(file);
+            readAnimation(file, length);
             break;
         default:
-            throw FileFormatException(&"Unknown header type"[headerType]);
+            throw FileFormatException("Unknown header type: " + std::to_string(headerType));
     }
-    file.close();
 
     if (!headerRead || !creditsRead || !animationRead) {
 
     }
 }
 
-void Caff::readHeader(std::ifstream &file) {
-    int length = utils::readAsInt(file, HEADER_LENGTH_SIZE);
+void Caff::readHeader(std::ifstream &file, int length) {
     char data[length];
     file.read(data, length);
-    processHeader(data, length);
-    headerRead = true;
-}
 
-void Caff::readCredits(std::ifstream &file) {
-    if (!headerRead) {
-        throw FileFormatException("The file should start with CAFF header.");
-    }
-    creditsRead = true;
-}
-
-void Caff::readAnimation(std::ifstream &file) {
-    if (!headerRead) {
-        throw FileFormatException("The file should start with CAFF header.");
-    }
-    animationRead = true;
-}
-
-void Caff::convert() {
-    std::cout << "convert" << std::endl;
-}
-
-void Caff::processHeader(const char *headerData, int headerLength) {
     char magicBytes[MAGIC_SIZE + 1];
-    memcpy(magicBytes, headerData, MAGIC_SIZE);
+    memcpy(magicBytes, data, MAGIC_SIZE);
     magicBytes[MAGIC_SIZE] = '\0';
     std::string magic = magicBytes;
 
@@ -90,17 +69,54 @@ void Caff::processHeader(const char *headerData, int headerLength) {
         throw FileFormatException("Invalid magic: " + magic);
     }
 
-    char lengthBytes[HEADER_LENGTH_SIZE];
-    memcpy(lengthBytes, headerData + MAGIC_SIZE, HEADER_LENGTH_SIZE);
-    int length = utils::covertToInt(lengthBytes);
+    char sizeBytes[HEADER_LENGTH_SIZE];
+    memcpy(sizeBytes, data + MAGIC_SIZE, HEADER_LENGTH_SIZE);
+    int size = utils::covertToInt(sizeBytes);
 
-    if (length != headerLength) {
+    if (size != length) {
         throw FileFormatException(
-                "The provided (" + std::to_string(length) + ") and the real length (" + std::to_string(headerLength) +
+                "The provided (" + std::to_string(size) + ") and the real size (" + std::to_string(length) +
                 ") if the header are different.");
     }
 
     char numberOfAnimationBytes[NUMBER_OF_ANIMATIONS_SIZE];
-    memcpy(numberOfAnimationBytes, headerData + MAGIC_SIZE + HEADER_LENGTH_SIZE, NUMBER_OF_ANIMATIONS_SIZE);
+    memcpy(numberOfAnimationBytes, data + MAGIC_SIZE + HEADER_LENGTH_SIZE, NUMBER_OF_ANIMATIONS_SIZE);
     numberOfAnimations = utils::covertToInt(numberOfAnimationBytes);
+
+    headerRead = true;
+}
+
+void Caff::readCredits(std::ifstream &file, int length) {
+    if (!headerRead) {
+        throw FileFormatException("The file should start with CAFF header.");
+    }
+
+    year = utils::readAsInt(file, YEAR_SIZE);
+    month = utils::readAsInt(file, MONTH_SIZE);
+    day = utils::readAsInt(file, DAY_SIZE);
+    hour = utils::readAsInt(file, HOUR_SIZE);
+    minute = utils::readAsInt(file, MINUTE_SIZE);
+
+    int creatorLength = utils::readAsInt(file, CREATOR_LENGTH_SIZE);
+    if (DATE_SIZE + CREATOR_LENGTH_SIZE + creatorLength != length) {
+        throw FileFormatException("The creator field exceeds the header's length (" + std::to_string(creatorLength) + " > " + std::to_string(length)+ ").");
+    }
+    creator = utils::readAsString(file, creatorLength);
+
+    creditsRead = true;
+}
+
+void Caff::readAnimation(std::ifstream &file, int length) {
+    if (!headerRead) {
+        throw FileFormatException("The file should start with CAFF header.");
+    }
+
+    int duration = utils::readAsInt(file, DURATION_SIZE);
+    durations.push_back(duration);
+
+    animationRead = true;
+}
+
+void Caff::convert() {
+    std::cout << "convert" << std::endl;
 }

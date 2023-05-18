@@ -14,6 +14,15 @@
 #define HEADER_LENGTH_SIZE 8
 #define MAGIC_SIZE 4
 #define NUMBER_OF_ANIMATIONS_SIZE 8
+#define CREATOR_LENGTH_SIZE 8
+#define DURATION_SIZE 8
+
+#define YEAR_SIZE 2
+#define MONTH_SIZE 1
+#define DAY_SIZE 1
+#define HOUR_SIZE 1
+#define MINUTE_SIZE 1
+#define DATE_SIZE YEAR_SIZE + MONTH_SIZE + DAY_SIZE + HOUR_SIZE + MINUTE_SIZE
 
 #define CAFF_MAGIC "CAFF"
 
@@ -27,6 +36,13 @@ namespace utils {
         char data[bytes];
         file.read(data, bytes);
         return utils::covertToInt(data);
+    }
+
+    std::string readAsString(std::ifstream &file, const int length) {
+        char bytes[length + 1];
+        file.read(bytes, length);
+        bytes[length] = '\0';
+        return bytes;
     }
 }
 
