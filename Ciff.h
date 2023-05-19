@@ -17,9 +17,11 @@ private:
     std::vector<std::string> tags;
 
     std::vector<Pixel> pixels;
+    uint8_t *content;
 
     void readHeader(std::ifstream &file);
     void readContent(std::ifstream &file);
 public:
     explicit Ciff(std::ifstream &file);
+    void convert(const std::string& outputFileName) const;
 };

@@ -133,5 +133,5 @@ void Caff::readAnimation(std::ifstream &file, int length) {
 }
 
 void Caff::convert() {
-    std::cout << "convert" << std::endl;
+    ciffImages[0].convert("output.webp");
 }

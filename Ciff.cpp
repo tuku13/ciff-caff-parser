@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "FileFormatException.h"
 #include <cstring>
+#include "includes/webp/encode.h"
 
 Ciff::Ciff(std::ifstream &file) {
     readHeader(file);
@@ -32,7 +33,8 @@ void Ciff::readHeader(std::ifstream &file) {
     height = utils::readAsInt(file, HEIGHT_SIZE);
 
     if (width < 0 || height < 0) {
-        throw FileFormatException("Invalid dimension: width = " + std::to_string(width) + ", height = " + std::to_string(height));
+        throw FileFormatException(
+                "Invalid dimension: width = " + std::to_string(width) + ", height = " + std::to_string(height));
     }
 
     int actualImageSize = width * height * 3;
@@ -101,8 +103,25 @@ void Ciff::readHeader(std::ifstream &file) {
 }
 
 void Ciff::readContent(std::ifstream &file) {
-    for (int i = 0; i <= contentSize / 3 - 1; i++) {
-        Pixel pixel = utils::readAsPixel(file);
-        pixels.push_back(pixel);
-    }
+    content = new uint8_t[contentSize];
+    char data[contentSize];
+    file.read(data, contentSize);
+    memcpy(content, data, contentSize);
+//    content = data;
+//    for (int i = 0; i <= contentSize / 3 - 1; i++) {
+//        Pixel pixel = utils::readAsPixel(file);
+//        pixels.push_back(pixel);
+//    }
+}
+
+void Ciff::convert(const std::string &outputFileName) const {
+    uint8_t* outputData;
+    size_t webpDataSize = WebPEncodeRGB(content, width, height, width * 3, 100, &outputData);
+    std::cout << "size: " << webpDataSize << std::endl;
+
+    FILE* outputFile = fopen(outputFileName.c_str(), "wb");
+    fwrite(outputData, 1, webpDataSize, outputFile);
+    fclose(outputFile);
+
+    WebPFree(outputData);
 }
