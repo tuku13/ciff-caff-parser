@@ -10,6 +10,7 @@
 
 class Caff {
 private:
+    std::string fileName;
     bool headerRead = false;
     bool creditsRead = false;
     bool animationRead = false;
@@ -30,7 +31,7 @@ private:
 
     void readHeader(std::ifstream &file, int length);
     void readCredits(std::ifstream &file, int length);
-    void readAnimation(std::ifstream &file, int length);
+    void readAnimation(std::ifstream &file);
 public:
     explicit Caff(const std::string &filePath);
 

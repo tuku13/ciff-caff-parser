@@ -9,6 +9,7 @@
 
 class Ciff {
 private:
+    std::string fileName;
     int width = 0;
     int height = 0;
 
@@ -22,6 +23,6 @@ private:
     void readHeader(std::ifstream &file);
     void readContent(std::ifstream &file);
 public:
-    explicit Ciff(std::ifstream &file);
-    void convert(const std::string& outputFileName) const;
+    explicit Ciff(std::ifstream &file, std::string fileName);
+    void convert() const;
 };

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Caff.h"
+#include "FileFormatException.h"
 
 void printUsage() {
     std::cout << "usage:" << std::endl;
@@ -45,8 +46,20 @@ int main(int argc, char *argv[]) {
     }
 
     try {
-        Caff caff(fileName);
-        caff.convert();
+        if (optionName == "-caff") {
+            Caff caff(fileName);
+            caff.convert();
+        } else if (optionName == "-ciff") {
+            std::ifstream file(fileName, std::ios::binary);
+            if (!file) {
+                throw FileFormatException(fileName + " not found.");
+            }
+
+            Caff ciff(fileName);
+            ciff.convert();
+
+            file.close();
+        }
     } catch (const std::exception &exception) {
         std::cout << exception.what() << std::endl;
         return -1;

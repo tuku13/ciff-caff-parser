@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <utility>
 #include <vector>
 #include "Ciff.h"
 #include "utils.h"
@@ -11,7 +12,17 @@
 #include <cstring>
 #include "includes/webp/encode.h"
 
-Ciff::Ciff(std::ifstream &file) {
+Ciff::Ciff(std::ifstream &file, std::string fileName) {
+    this->fileName = std::move(fileName);
+    size_t slashPos = this->fileName.find('/');
+    if (slashPos != std::string::npos) {
+        this->fileName.erase(0, slashPos + 1);
+    }
+    size_t extensionPos = this->fileName.rfind('.');
+    if (extensionPos != std::string::npos) {
+        this->fileName.replace(extensionPos, this->fileName.length() - extensionPos, ".webp");
+    }
+
     readHeader(file);
     readContent(file);
 }
@@ -22,14 +33,10 @@ void Ciff::readHeader(std::ifstream &file) {
         throw FileFormatException("Invalid magic: " + magic);
     }
 
-    std::cout << "headerSize" << std::endl;
     int headerSize = utils::readAsInt(file, HEADER_LENGTH_SIZE);
 
-    std::cout << "contentSize" << std::endl;
     contentSize = utils::readAsInt(file, CONTENT_SIZE);
-    std::cout << "width" << std::endl;
     width = utils::readAsInt(file, WIDTH_SIZE);
-    std::cout << "height" << std::endl;
     height = utils::readAsInt(file, HEIGHT_SIZE);
 
     if (width < 0 || height < 0) {
@@ -75,7 +82,6 @@ void Ciff::readHeader(std::ifstream &file) {
     memcpy(captionBytes, captionAndTagsBytes, endOfCaption);
     captionBytes[endOfCaption] = '\0';
     caption = captionBytes;
-    std::cout << "caption: " << caption << std::endl;
 
     int tagsLength = captionAndTagsLength - endOfCaption + 1;
     char tagsBytes[tagsLength];
@@ -95,11 +101,6 @@ void Ciff::readHeader(std::ifstream &file) {
             tagSegment += c;
         }
     }
-
-    std::cout << "tags:" << std::endl;
-    for (const std::string &tag: tags) {
-        std::cout << "\t- " << tag << std::endl;
-    }
 }
 
 void Ciff::readContent(std::ifstream &file) {
@@ -107,21 +108,17 @@ void Ciff::readContent(std::ifstream &file) {
     char data[contentSize];
     file.read(data, contentSize);
     memcpy(content, data, contentSize);
-//    content = data;
-//    for (int i = 0; i <= contentSize / 3 - 1; i++) {
-//        Pixel pixel = utils::readAsPixel(file);
-//        pixels.push_back(pixel);
-//    }
 }
 
-void Ciff::convert(const std::string &outputFileName) const {
+void Ciff::convert() const {
     uint8_t* outputData;
     size_t webpDataSize = WebPEncodeRGB(content, width, height, width * 3, 100, &outputData);
-    std::cout << "size: " << webpDataSize << std::endl;
 
-    FILE* outputFile = fopen(outputFileName.c_str(), "wb");
+    FILE* outputFile = fopen(fileName.c_str(), "wb");
     fwrite(outputData, 1, webpDataSize, outputFile);
     fclose(outputFile);
 
     WebPFree(outputData);
+
+    std::cout << fileName << " successfully created." << std::endl;
 }

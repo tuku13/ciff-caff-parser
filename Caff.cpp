@@ -12,12 +12,22 @@
 #include <cstring>
 
 Caff::Caff(const std::string &fileName) {
+    this->fileName = fileName;
+
+    size_t slashPos = this->fileName.find('/');
+    if (slashPos != std::string::npos) {
+        this->fileName.erase(0, slashPos + 1);
+    }
+    size_t extensionPos = this->fileName.rfind('.');
+    if (extensionPos != std::string::npos) {
+        this->fileName.replace(extensionPos, this->fileName.length() - extensionPos, ".webp");
+    }
+
     std::ifstream file(fileName, std::ios::binary);
     if (!file) {
         throw FileFormatException(fileName + " not found.");
     }
 
-//    bool fileProcessed = false;
     int processedHeaders = 0;
     while (processedHeaders < 3) {
         try {
@@ -27,30 +37,24 @@ Caff::Caff(const std::string &fileName) {
             throw FileFormatException(exception.what());
         }
         processedHeaders++;
-//        fileProcessed = true;
     }
 
     file.close();
 }
 
 void Caff::readFileHeader(std::ifstream &file) {
-    std::cout << "headerType" << std::endl;
     int headerType = utils::readAsInt(file, 1);
-    std::cout << "length" << std::endl;
     int length = utils::readAsInt(file, HEADER_LENGTH_SIZE);
 
     switch (headerType) {
         case HEADER_TYPE_HEADER:
-            std::cout << "HEADER" << std::endl;
             readHeader(file, length);
             break;
         case HEADER_TYPE_CREDITS:
-            std::cout << "CREDITS" << std::endl;
             readCredits(file, length);
             break;
         case HEADER_TYPE_ANIMATION:
-            std::cout << "ANIMATION" << std::endl;
-            readAnimation(file, length);
+            readAnimation(file);
             break;
         default:
             throw FileFormatException("Unknown header type: " + std::to_string(headerType));
@@ -96,18 +100,12 @@ void Caff::readCredits(std::ifstream &file, int length) {
         throw FileFormatException("The file should start with CAFF header.");
     }
 
-    std::cout << "year" << std::endl;
     year = utils::readAsInt(file, YEAR_SIZE);
-    std::cout << "month" << std::endl;
     month = utils::readAsInt(file, MONTH_SIZE);
-    std::cout << "day" << std::endl;
     day = utils::readAsInt(file, DAY_SIZE);
-    std::cout << "hour" << std::endl;
     hour = utils::readAsInt(file, HOUR_SIZE);
-    std::cout << "minute" << std::endl;
     minute = utils::readAsInt(file, MINUTE_SIZE);
 
-    std::cout << "creatorLength" << std::endl;
     int creatorLength = utils::readAsInt(file, CREATOR_LENGTH_SIZE);
     if (DATE_SIZE + CREATOR_LENGTH_SIZE + creatorLength != length) {
         throw FileFormatException("The creator field exceeds the header's length (" + std::to_string(creatorLength) + " > " + std::to_string(length)+ ").");
@@ -117,21 +115,20 @@ void Caff::readCredits(std::ifstream &file, int length) {
     creditsRead = true;
 }
 
-void Caff::readAnimation(std::ifstream &file, int length) {
+void Caff::readAnimation(std::ifstream &file) {
     if (!headerRead) {
         throw FileFormatException("The file should start with CAFF header.");
     }
 
-    std::cout << "duration" << std::endl;
     int duration = utils::readAsInt(file, DURATION_SIZE);
     durations.push_back(duration);
 
-    Ciff ciff(file);
+    Ciff ciff(file, fileName);
     ciffImages.push_back(ciff);
 
     animationRead = true;
 }
 
 void Caff::convert() {
-    ciffImages[0].convert("output.webp");
+    ciffImages[0].convert();
 }
