@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "constants.h"
 #include "FileFormatException.h"
+#include <cstring>
 
 Ciff::Ciff(std::ifstream &file) {
     readHeader(file);
@@ -20,10 +21,14 @@ void Ciff::readHeader(std::ifstream &file) {
         throw FileFormatException("Invalid magic: " + magic);
     }
 
+    std::cout << "headerSize" << std::endl;
     int headerSize = utils::readAsInt(file, HEADER_LENGTH_SIZE);
 
+    std::cout << "contentSize" << std::endl;
     contentSize = utils::readAsInt(file, CONTENT_SIZE);
+    std::cout << "width" << std::endl;
     width = utils::readAsInt(file, WIDTH_SIZE);
+    std::cout << "height" << std::endl;
     height = utils::readAsInt(file, HEIGHT_SIZE);
 
     if (width < 0 || height < 0) {
@@ -97,10 +102,7 @@ void Ciff::readHeader(std::ifstream &file) {
 
 void Ciff::readContent(std::ifstream &file) {
     for (int i = 0; i <= contentSize / 3 - 1; i++) {
-        int r = utils::readAsInt(file, 1);
-        int g = utils::readAsInt(file, 1);
-        int b = utils::readAsInt(file, 1);
-
-        pixels.emplace_back(r, g, b);
+        Pixel pixel = utils::readAsPixel(file);
+        pixels.push_back(pixel);
     }
 }

@@ -5,25 +5,17 @@
 #include <iostream>
 #include "utils.h"
 
+Pixel utils::readAsPixel(std::ifstream &file) {
+    char data[3];
+    file.readsome(data, 3);
+    return Pixel(data[0], data[1], data[2]);
+}
+
 int utils::covertToInt(const char *data) {
-    for (int i = 0; i <= sizeof(data) - 1; i++) {
-        std::cout << std::to_string(data[i]) << " ";
+    int value = 0;
+    for (int i = 0; i <= sizeof(&data) - 1; i++) {
+        value += static_cast<unsigned char>(data[i]) * 1 << (8 * i);
     }
-    std::cout << std::endl;
-//    std::cout << "-> ";
-
-    char dataInverse[sizeof(data)];
-    for (int i = 0; i <= sizeof(data) - 1; i++) {
-        dataInverse[i] = data[sizeof(data) - 1 - i];
-    }
-    for (int i = 0; i <= sizeof(data) - 1; i++) {
-        std::cout << std::to_string(dataInverse[i]) << " ";
-    }
-    std::cout << std::endl;
-
-    int value = covertToInt(data, 1);
-    std::cout << value << " | " << covertToInt(dataInverse, sizeof(data)) << std::endl;
-    std::cout << std::endl;
     return value;
 }
 
@@ -37,7 +29,7 @@ int utils::covertToInt(const char *data, int bytes) {
 
 int utils::readAsInt(std::ifstream &file, const int bytes) {
     char data[bytes];
-    file.read(data, bytes);
+    file.readsome(data, bytes);
     return covertToInt(data);
 }
 
