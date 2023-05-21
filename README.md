@@ -5,6 +5,15 @@ into [WebP](https://developers.google.com/speed/webp) format.
 
 ![Banner image created by converting 1.caff](./banner-image.webp)
 
+# Compile
+
+You can compile the program easily with the included Makefile.
+
+> You need to install `g++` and `make` if you don't have them installed.
+
+Compile: 
+`make`
+
 # Usage
 
 Parsing a CAFF file
