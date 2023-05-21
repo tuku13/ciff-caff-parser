@@ -4,7 +4,7 @@ directory="./test-files"
 
 program="./parser"
 
-for file in "$directory"/*.caff; do
+for file in "$directory"/*.caff "$directory"/*.ciff; do
   filename=$(basename "$file")
   echo "Running test for file: $filename"
 
