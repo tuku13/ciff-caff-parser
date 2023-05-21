@@ -84,13 +84,17 @@ void Caff::readHeader(std::ifstream &file, int length) {
 
     if (size != length) {
         throw FileFormatException(
-                "The provided (" + std::to_string(size) + ") and the real size (" + std::to_string(length) +
-                ") if the header are different.");
+                "The provided (" + std::to_string(length) + ") and the real size (" + std::to_string(size) +
+                ") of the header are different.");
     }
 
     char numberOfAnimationBytes[NUMBER_OF_ANIMATIONS_SIZE];
     memcpy(numberOfAnimationBytes, data + MAGIC_SIZE + HEADER_LENGTH_SIZE, NUMBER_OF_ANIMATIONS_SIZE);
     numberOfAnimations = utils::covertToInt(numberOfAnimationBytes);
+
+    if (numberOfAnimations < 0) {
+        throw FileFormatException("The number of animations (" + std::to_string(numberOfAnimations)+ ") are lesser than zero. ");
+    }
 
     headerRead = true;
 }

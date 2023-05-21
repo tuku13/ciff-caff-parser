@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "constants.h"
 #include "FileFormatException.h"
+#include "includes/webp/encode.h"
 #include <cstring>
 
 Ciff::Ciff(std::ifstream &file, std::string fileName) {
