@@ -5,7 +5,6 @@
 #pragma once
 
 #include <fstream>
-#include "Pixel.h"
 
 class Ciff {
 private:
@@ -17,8 +16,7 @@ private:
     std::string caption;
     std::vector<std::string> tags;
 
-    std::vector<Pixel> pixels;
-    uint8_t *content;
+    unsigned char *content;
 
     void readHeader(std::ifstream &file);
     void readContent(std::ifstream &file);

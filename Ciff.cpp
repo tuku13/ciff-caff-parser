@@ -10,7 +10,6 @@
 #include "constants.h"
 #include "FileFormatException.h"
 #include <cstring>
-#include "includes/webp/encode.h"
 
 Ciff::Ciff(std::ifstream &file, std::string fileName) {
     this->fileName = std::move(fileName);
@@ -104,7 +103,7 @@ void Ciff::readHeader(std::ifstream &file) {
 }
 
 void Ciff::readContent(std::ifstream &file) {
-    content = new uint8_t[contentSize];
+    content = new unsigned char [contentSize];
     char data[contentSize];
     file.read(data, contentSize);
     memcpy(content, data, contentSize);

@@ -5,24 +5,10 @@
 #include <iostream>
 #include "utils.h"
 
-Pixel utils::readAsPixel(std::ifstream &file) {
-    char data[3];
-    file.readsome(data, 3);
-    return Pixel(data[0], data[1], data[2]);
-}
-
 int utils::covertToInt(const char *data) {
     int value = 0;
     for (int i = 0; i <= sizeof(&data) - 1; i++) {
         value += static_cast<unsigned char>(data[i]) * 1 << (8 * i);
-    }
-    return value;
-}
-
-int utils::covertToInt(const char *data, int bytes) {
-    int value = 0;
-    for (int i = 0; i < bytes; i++) {
-        value = (value << 8) | static_cast<unsigned char>(data[i]);
     }
     return value;
 }
